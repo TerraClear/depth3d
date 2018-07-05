@@ -14,6 +14,11 @@
 
 #ifndef XKDEPTH_HPP
 #define XKDEPTH_HPP
+
+#include <cstdint>
+#include <opencv2/opencv.hpp>
+
+
 namespace xk
 {
     class xkdepth 
@@ -22,9 +27,11 @@ namespace xk
             xkdepth();
             virtual ~xkdepth();
 
-        protected:
             //pure virtual function for acquiring depth (Z) and specific X Y  
-            virtual void get_depth_meters() = 0;
+            virtual uint32_t    get_depth_cm(uint32_t x, uint32_t y) = 0;
+            virtual cv::Mat     get_frame_color() = 0;
+
+        protected:
 
         private:
 

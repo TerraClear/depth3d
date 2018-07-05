@@ -54,7 +54,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=`pkg-config --libs opencv` `pkg-config --libs realsense2`  
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -67,17 +67,17 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/depth3d: ${OBJECTFILES}
 ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g `pkg-config --cflags opencv` `pkg-config --cflags realsense2` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 ${OBJECTDIR}/xkdepth.o: xkdepth.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkdepth.o xkdepth.cpp
+	$(COMPILE.cc) -g `pkg-config --cflags opencv` `pkg-config --cflags realsense2` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkdepth.o xkdepth.cpp
 
 ${OBJECTDIR}/xkdepth_realsense.o: xkdepth_realsense.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkdepth_realsense.o xkdepth_realsense.cpp
+	$(COMPILE.cc) -g `pkg-config --cflags opencv` `pkg-config --cflags realsense2` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkdepth_realsense.o xkdepth_realsense.cpp
 
 # Subprojects
 .build-subprojects:
