@@ -20,41 +20,85 @@
 
 using namespace std;
 
-/*
- * 
- */
+
+//Capture mouse click position..
+
+cv::Point _clickpos(0,0);
+
+void mousecallback(int event, int x, int y, int flags, void* userdata)
+{
+     if  ( event == cv::EVENT_LBUTTONDOWN )
+     {
+         //set measure point where mouse was clicked..
+            _clickpos = cv::Point(x,y);
+     }
+     else if  ( event == cv::EVENT_RBUTTONDOWN )
+     {
+     }
+     else if  ( event == cv::EVENT_MBUTTONDOWN )
+     {
+     }
+     else if ( event == cv::EVENT_MOUSEMOVE )
+     {
+
+     }
+}
+
 int main(int argc, char** argv) 
 {
+    //testing realsense cam implementation..
     xk::xkdepth_realsense rls;
+
     
+    //create 3d depth obj.
+    xk::xkdepth* depthcam = &rls;
+    
+    //Open CV Window stuff
     std::string window_name = "rgb";
     cv::namedWindow(window_name, 0 );
     cv::resizeWindow(window_name, 980, 540);
+    
+    //set the callback function for all mouse events
+    cv::setMouseCallback(window_name, mousecallback, NULL);
 
-    while (true)
+    //get first frame
+    depthcam->update_frames();
+
+    //center of image to get depth..
+   _clickpos = cv::Point(depthcam->_frame_color.cols / 2, depthcam->_frame_color.rows / 2);
+
+
+   do
     {
-        rls.update_frames();
-        
-        double distance = rls.get_depth_inches(rls._frame_color.cols / 2, rls._frame_color.rows / 2);       
-
-        //Draw distance..
-        char str[12];
-        sprintf(str,"%.2f\"\0", distance);
-        putText(rls._frame_color, str, cv::Point(50,125), cv::FONT_HERSHEY_PLAIN, 4,  cv::Scalar(0x00, 0x00, 0xff), 2);                                    
-        
         //circle around target area..
-        cv::circle(rls._frame_color, cv::Point(rls._frame_color.cols / 2, rls._frame_color.rows / 2), 10, cv::Scalar(0x00, 0x00, 0xff), 2);
+        cv::circle(depthcam->_frame_color, _clickpos, 10, cv::Scalar(0x00, 0x00, 0xff), 2);
 
-        cv::imshow(window_name, rls._frame_color);
+        //get the distance
+        double distance = depthcam->get_depth_inches(_clickpos.x, _clickpos.y);       
 
-        int x = cv::waitKey(1 );
+        //Draw distance text
+        char str[12];
+        memset(&str, 0x00, sizeof(str));
+        
+        sprintf(str,"%.2f\"", distance);
+        putText(depthcam->_frame_color, str, cv::Point(50,125), cv::FONT_HERSHEY_PLAIN, 4,  cv::Scalar(0x00, 0x00, 0xff), 2);                                    
+        
+        //show image
+        cv::imshow(window_name, depthcam->_frame_color);
+
+        //30 fps roughly
+        int x = cv::waitKey(33);
         if (x > 0)
         {
             cout << "EXIT: " << x << endl ;
             break;
         }
+     
+        //update camera frames..
+        depthcam->update_frames();
         
-    }
+   } while (true);
+
     
 
     return 0;
