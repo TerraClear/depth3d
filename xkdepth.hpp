@@ -23,13 +23,16 @@ namespace xk
 {
     class xkdepth 
     {
-        public:
+        public:            
+                    cv::Mat _frame_color;
+            
             xkdepth();
             virtual ~xkdepth();
 
             //pure virtual function for acquiring depth (Z) and specific X Y  
-            virtual uint32_t    get_depth_cm(uint32_t x, uint32_t y) = 0;
-            virtual cv::Mat     get_frame_color() = 0;
+            virtual double    get_depth_cm(uint32_t x, uint32_t y) = 0;
+                    double    get_depth_inches(uint32_t x, uint32_t y);
+            virtual void        update_frames() = 0;
 
         protected:
 

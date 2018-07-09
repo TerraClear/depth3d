@@ -22,7 +22,7 @@
 
 namespace xk
 {
-    class xkdepth_realsense : xkdepth
+    class xkdepth_realsense : public xkdepth
     {
 
         public:
@@ -30,14 +30,15 @@ namespace xk
             virtual ~xkdepth_realsense();
 
             //base class implementations.. 
-            uint32_t    get_depth_cm(uint32_t x, uint32_t y);
-            cv::Mat     get_frame_color();
+            double      get_depth_cm(uint32_t x, uint32_t y);
+            void        update_frames();
         
         private:
             rs2::pipeline   _pipe;
             rs2::config     _pipe_config;
-
-
+            
+            std::shared_ptr<rs2::depth_frame> _frame_depth;
+            
     };
 }
 

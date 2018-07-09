@@ -30,32 +30,33 @@ namespace xk
         _pipe.stop();
     }
     
-    uint32_t xkdepth_realsense::get_depth_cm(uint32_t x, uint32_t y)
+    double xkdepth_realsense::get_depth_cm(uint32_t x, uint32_t y)
     {
-        return 0;
+        float yscale = _frame_depth->get_height() / _frame_color.rows;
+        float xscale = _frame_depth->get_width() / _frame_color.cols;
+        
+        //get distance, factor in scale between depth & color frames.
+        return _frame_depth->get_distance(x * xscale , y * yscale) * 100.00f;
     }
     
-    cv::Mat xkdepth_realsense::get_frame_color()
+    void xkdepth_realsense::update_frames()
     {
-        cv::Mat retval;
-        
-                    // get the data for the frame and display the image
-            // gathers the rgb image and the depth camera image
-            rs2::frameset frames = _pipe.wait_for_frames();
+        // gathers the rgb image and the depth camera image
+        rs2::frameset frames = _pipe.wait_for_frames();
+
+        // align depth to the color stream
+        rs2::align align(RS2_STREAM_COLOR);
+
+        rs2::frameset processed = align.process(frames);
+
+        // get the data for the frame and display the image
+        _frame_depth = std::make_shared<rs2::depth_frame>(processed.first(RS2_STREAM_DEPTH));
+
+        //grab RGB frame..
+        rs2::video_frame cur_color_frame(processed.get_color_frame());
+
+        //convert to cv Mat
+        _frame_color = cv::Mat( cur_color_frame.get_height(), cur_color_frame.get_width(), CV_8UC3, (uchar *) cur_color_frame.get_data() );
             
-            // align depth to the color stream
-            // todo: figure out why color stream is 640 by 480
-            rs2::align align(RS2_STREAM_COLOR);
-            
-            rs2::frameset processed = align.process(frames);
-            
-            // get the data for the frame and display the image
-            //cur_depth_frame = std::make_shared<rs2::depth_frame>(processed.first(RS2_STREAM_DEPTH));    
-            
-            rs2::video_frame cur_color_frame(processed.get_color_frame());
-            
-            retval = cv::Mat( cur_color_frame.get_height(), cur_color_frame.get_width(), CV_8UC3, (uchar *) cur_color_frame.get_data() );
-            
-        return retval;
     } 
 }

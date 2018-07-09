@@ -21,4 +21,10 @@ namespace xk
     xkdepth::~xkdepth() 
     {
     }
+    
+    double xkdepth::get_depth_inches(uint32_t x, uint32_t y)
+    {
+        //cm to inches
+        return get_depth_cm(x, y) * 0.393701;
+    }
 }

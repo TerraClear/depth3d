@@ -33,9 +33,21 @@ int main(int argc, char** argv)
 
     while (true)
     {
-        cv::imshow(window_name, rls.get_frame_color());
+        rls.update_frames();
+        
+        double distance = rls.get_depth_inches(rls._frame_color.cols / 2, rls._frame_color.rows / 2);       
 
-        int x = cv::waitKey( 100 );
+        //Draw distance..
+        char str[12];
+        sprintf(str,"%.2f\"\0", distance);
+        putText(rls._frame_color, str, cv::Point(50,125), cv::FONT_HERSHEY_PLAIN, 4,  cv::Scalar(0x00, 0x00, 0xff), 2);                                    
+        
+        //circle around target area..
+        cv::circle(rls._frame_color, cv::Point(rls._frame_color.cols / 2, rls._frame_color.rows / 2), 10, cv::Scalar(0x00, 0x00, 0xff), 2);
+
+        cv::imshow(window_name, rls._frame_color);
+
+        int x = cv::waitKey(1 );
         if (x > 0)
         {
             cout << "EXIT: " << x << endl ;
