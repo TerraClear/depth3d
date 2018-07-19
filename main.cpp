@@ -73,8 +73,36 @@ int main(int argc, char** argv)
         //circle around target area..
         cv::circle(depthcam->_frame_color, _clickpos, 10, cv::Scalar(0x00, 0x00, 0xff), 2);
 
-        //get the distance
-        double distance = depthcam->get_depth_inches(_clickpos.x, _clickpos.y);       
+        
+        double distance = 0; 
+ 
+        //get the mean distance of a X*Y square
+        std::vector<int> distances;
+        for (int xw = -5; xw < 5; xw++ )
+        {
+            for (int yh = -5; yh < 5; yh++)
+            {
+                double dist = depthcam->get_depth_inches(_clickpos.x+xw, _clickpos.y+yh);
+                
+                //only use non zeros
+                if (dist > 0)
+                    distances.push_back(dist);
+            }
+        }
+ 
+        //If no readings in square was above zero, output whatever the current reading is.. even if zero..
+        if (distances.size() > 0)
+        {
+            //median
+            std::nth_element(distances.begin(), distances.begin() + distances.size()/2, distances.end());
+            distance = distances[distances.size()/2];
+        }
+        else
+        {
+            distance = depthcam->get_depth_inches(_clickpos.x, _clickpos.y);       
+        }
+
+        
 
         //Draw distance text
         char str[12];
