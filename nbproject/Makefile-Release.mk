@@ -36,8 +36,11 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/xkdepth.o \
-	${OBJECTDIR}/xkdepth_realsense.o
+	${OBJECTDIR}/xkcamera.o \
+	${OBJECTDIR}/xkcamera_depth.o \
+	${OBJECTDIR}/xkcamera_depth_realsense.o \
+	${OBJECTDIR}/xkcamera_file.o \
+	${OBJECTDIR}/xkcamera_usb.o
 
 
 # C Compiler Flags
@@ -69,15 +72,30 @@ ${OBJECTDIR}/main.o: main.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
-${OBJECTDIR}/xkdepth.o: xkdepth.cpp
+${OBJECTDIR}/xkcamera.o: xkcamera.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkdepth.o xkdepth.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkcamera.o xkcamera.cpp
 
-${OBJECTDIR}/xkdepth_realsense.o: xkdepth_realsense.cpp
+${OBJECTDIR}/xkcamera_depth.o: xkcamera_depth.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkdepth_realsense.o xkdepth_realsense.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkcamera_depth.o xkcamera_depth.cpp
+
+${OBJECTDIR}/xkcamera_depth_realsense.o: xkcamera_depth_realsense.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkcamera_depth_realsense.o xkcamera_depth_realsense.cpp
+
+${OBJECTDIR}/xkcamera_file.o: xkcamera_file.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkcamera_file.o xkcamera_file.cpp
+
+${OBJECTDIR}/xkcamera_usb.o: xkcamera_usb.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkcamera_usb.o xkcamera_usb.cpp
 
 # Subprojects
 .build-subprojects:

@@ -1,36 +1,39 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   xkdepth_realsense.cpp
- * Author: koos
+ * Specific implementation for RealSense 3D camera class 
+ * Copyright (C) 2017 Jacobus du Preez / kdupreez@hotmail.com
  * 
- * Created on July 5, 2018, 12:29 PM
- */
-
-#include "xkdepth_realsense.hpp"
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+#include "xkcamera_depth_realsense.hpp"
 
 namespace xk
 {
-    xkdepth_realsense::xkdepth_realsense() 
+    xkcamera_depth_realsense::xkcamera_depth_realsense() 
     {
         //enable RGB and Depth streams.
         _pipe_config.enable_stream(RS2_STREAM_COLOR, 1920,1080,RS2_FORMAT_BGR8, 15);
         _pipe_config.enable_stream(RS2_STREAM_DEPTH, 1280,720,RS2_FORMAT_ANY, 15);
         
         _pipe.start(_pipe_config);
-        
     }
 
-    xkdepth_realsense::~xkdepth_realsense() 
+    xkcamera_depth_realsense::~xkcamera_depth_realsense() 
     {
         _pipe.stop();
     }
     
-    double xkdepth_realsense::get_depth_cm(uint32_t x, uint32_t y)
+    double xkcamera_depth_realsense::get_depth_cm(uint32_t x, uint32_t y)
     {
         float yscale = _frame_depth->get_height() / _frame_color.rows;
         float xscale = _frame_depth->get_width() / _frame_color.cols;
@@ -39,7 +42,7 @@ namespace xk
         return _frame_depth->get_distance(x * xscale , y * yscale) * 100.00f;
     }
     
-    void xkdepth_realsense::update_frames()
+    void xkcamera_depth_realsense::update_frames()
     {
         // gathers the rgb image and the depth camera image
         rs2::frameset frames = _pipe.wait_for_frames();

@@ -4,8 +4,11 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>xkdepth.hpp</itemPath>
-      <itemPath>xkdepth_realsense.hpp</itemPath>
+      <itemPath>xkcamera.hpp</itemPath>
+      <itemPath>xkcamera_depth.hpp</itemPath>
+      <itemPath>xkcamera_depth_realsense.hpp</itemPath>
+      <itemPath>xkcamera_file.hpp</itemPath>
+      <itemPath>xkcamera_usb.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -15,8 +18,11 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>main.cpp</itemPath>
-      <itemPath>xkdepth.cpp</itemPath>
-      <itemPath>xkdepth_realsense.cpp</itemPath>
+      <itemPath>xkcamera.cpp</itemPath>
+      <itemPath>xkcamera_depth.cpp</itemPath>
+      <itemPath>xkcamera_depth_realsense.cpp</itemPath>
+      <itemPath>xkcamera_file.cpp</itemPath>
+      <itemPath>xkcamera_usb.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -53,13 +59,25 @@
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="xkdepth.cpp" ex="false" tool="1" flavor2="0">
+      <item path="xkcamera.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="xkdepth.hpp" ex="false" tool="3" flavor2="0">
+      <item path="xkcamera.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="xkdepth_realsense.cpp" ex="false" tool="1" flavor2="0">
+      <item path="xkcamera_depth.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="xkdepth_realsense.hpp" ex="false" tool="3" flavor2="0">
+      <item path="xkcamera_depth.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="xkcamera_depth_realsense.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="xkcamera_depth_realsense.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="xkcamera_file.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="xkcamera_file.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="xkcamera_usb.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="xkcamera_usb.hpp" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -84,13 +102,25 @@
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="xkdepth.cpp" ex="false" tool="1" flavor2="0">
+      <item path="xkcamera.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="xkdepth.hpp" ex="false" tool="3" flavor2="0">
+      <item path="xkcamera.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="xkdepth_realsense.cpp" ex="false" tool="1" flavor2="0">
+      <item path="xkcamera_depth.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="xkdepth_realsense.hpp" ex="false" tool="3" flavor2="0">
+      <item path="xkcamera_depth.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="xkcamera_depth_realsense.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="xkcamera_depth_realsense.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="xkcamera_file.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="xkcamera_file.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="xkcamera_usb.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="xkcamera_usb.hpp" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>
