@@ -1,5 +1,5 @@
 /*
- * Base Depth Camera class 
+ * Specific implementation for StereoLabs ZED 3D camera class 
  * Copyright (C) 2017 Jacobus du Preez / kdupreez@hotmail.com
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15,38 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+#ifndef XKCAMERA_DEPTH_ZED_HPP
+#define XKCAMERA_DEPTH_ZED_HPP
 
-#ifndef XKCAMERA_DEPTH_HPP
-#define XKCAMERA_DEPTH_HPP
+#include "xkcamera_depth.hpp"
 
-#include "xkcamera.hpp"
-
-#define INCHES_PER_CM 0.393701
+#define ZED_RESX 1920 * 2
+#define ZED_RESY 1080
 
 namespace xk
 {
-    enum CameraPosition
+    class xkcamera_depth_zed : public xkcamera_depth
     {
-        Left,
-        Right,
-        Both
+     
+        public:
+            xkcamera_depth_zed(uint32_t camera_index, CameraPosition selected_cam);
+            virtual ~xkcamera_depth_zed();
+
+            //base class implementations.. 
+            double      get_depth_cm(uint32_t x, uint32_t y);
+            void        update_frames();
+
+        private:
+            CameraPosition _selected_camera = CameraPosition::Both;
+            cv::VideoCapture _videofeed;
+            
     };
-    
-    class xkcamera_depth : public xkcamera
-    {
-        
-        public:            
-            xkcamera_depth();
-            virtual ~xkcamera_depth();
-
-            //pure virtual function for acquiring depth (Z) and specific X Y  
-            virtual double      get_depth_cm(uint32_t x, uint32_t y) = 0;
-                    double      get_depth_inches(uint32_t x, uint32_t y);
-            private:
-
-    };    
 }
-
-
-#endif /* XKCAMERA_DEPTH_HPP */
+#endif /* XKCAMERA_DEPTH_ZED_HPP */
 

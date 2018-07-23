@@ -43,6 +43,7 @@ namespace xk
             rs2::config     _pipe_config;
             
             std::shared_ptr<rs2::depth_frame> _frame_depth;
+            double get_depth_internal(uint32_t x, uint32_t y);
             
     };
 }

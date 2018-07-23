@@ -39,6 +39,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/xkcamera.o \
 	${OBJECTDIR}/xkcamera_depth.o \
 	${OBJECTDIR}/xkcamera_depth_realsense.o \
+	${OBJECTDIR}/xkcamera_depth_zed.o \
 	${OBJECTDIR}/xkcamera_file.o \
 	${OBJECTDIR}/xkcamera_usb.o
 
@@ -86,6 +87,11 @@ ${OBJECTDIR}/xkcamera_depth_realsense.o: xkcamera_depth_realsense.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g `pkg-config --cflags opencv` `pkg-config --cflags realsense2` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkcamera_depth_realsense.o xkcamera_depth_realsense.cpp
+
+${OBJECTDIR}/xkcamera_depth_zed.o: xkcamera_depth_zed.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g `pkg-config --cflags opencv` `pkg-config --cflags realsense2` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkcamera_depth_zed.o xkcamera_depth_zed.cpp
 
 ${OBJECTDIR}/xkcamera_file.o: xkcamera_file.cpp
 	${MKDIR} -p ${OBJECTDIR}

@@ -24,6 +24,8 @@
 #include "xkcamera_depth_realsense.hpp"
 #include "xkcamera_usb.hpp"
 #include "xkcamera_file.hpp"
+#include "xkcamera_depth_zed.hpp"
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 
@@ -58,16 +60,20 @@ int main(int argc, char** argv)
     //testing realsense cam implementation..
     xk::xkcamera_depth_realsense realsense;
 
+    //testing ZED cam implementation..
+    //xk::xkcamera_depth_zed zed(0, xk::CameraPosition::Left);
+
     //testing regular usb cam implementation..
-    xk::xkcamera_usb usbcam(3, 1280, 720);
+  //  xk::xkcamera_usb usbcam(3, 1280, 720);
 
     //testing video file implementation..
-    xk::xkcamera_file filecam("/home/koos/Downloads/rocks4.mp4");
+  //  xk::xkcamera_file filecam("/home/koos/Downloads/rocks4.mp4");
     
     
     //cast to camera
-//    xk::xkcamera* cam = &realsense;
-    xk::xkcamera* cam = &usbcam;
+    xk::xkcamera* cam = &realsense;
+//    xk::xkcamera* cam = &zed;
+//    xk::xkcamera* cam = &usbcam;
 //    xk::xkcamera* cam = &filecam;
 
 
@@ -82,8 +88,8 @@ int main(int argc, char** argv)
 
     //Open CV Window stuff
     std::string window_name = "rgb";
-    cv::namedWindow(window_name, 0 );
-    cv::resizeWindow(window_name, 1024, 768);
+    cv::namedWindow(window_name, cv::WINDOW_NORMAL | cv::WINDOW_FREERATIO);// | WINDOW_AUTOSIZE);
+  //  cv::resizeWindow(window_name, 1024, 768);
     
     //set the callback function for all mouse events
     cv::setMouseCallback(window_name, mousecallback, NULL);
@@ -104,38 +110,15 @@ int main(int argc, char** argv)
 
         //get the mean distance of a X*Y square
         double distance = 0; 
-        std::vector<double> distances;
         if (has3d) //only get distance of camera supports 3D funcions..
         {
 
-            for (int xw = -5; xw < 5; xw++ )
-            {
-                for (int yh = -5; yh < 5; yh++)
-                {
-                    double dist = depthcam->get_depth_inches(_clickpos.x+xw, _clickpos.y+yh);
-
-                    //only use non zeros
-                    if (dist > 0)
-                        distances.push_back(dist);
-                }
-            }
-
-            //If no readings in square was above zero, output whatever the current reading is.. even if zero..
-            if (distances.size() > 0)
-            {
-                //median
-                std::nth_element(distances.begin(), distances.begin() + distances.size()/2, distances.end());
-                distance = distances[distances.size()/2];
-            }
-            else
-            {
-                distance = depthcam->get_depth_cm(_clickpos.x, _clickpos.y);       
-            }
+            distance = depthcam->get_depth_cm(_clickpos.x, _clickpos.y);       
 
             //Draw distance text
             std::stringstream strstrm;
 //            strstrm << std::fixed << std::setprecision(2) << distance << " cm";
-            strstrm << std::fixed << std::setprecision(2) << (uint32_t) distance << " cm";
+            strstrm << std::fixed << std::setprecision(2) << (uint32_t) distance << "\"";
             putText(cam_img, strstrm.str(), cv::Point(50,125), cv::FONT_HERSHEY_PLAIN, 4,  cv::Scalar(0x00, 0x00, 0xff), 2);                                    
         }
         else

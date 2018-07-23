@@ -7,6 +7,7 @@
       <itemPath>xkcamera.hpp</itemPath>
       <itemPath>xkcamera_depth.hpp</itemPath>
       <itemPath>xkcamera_depth_realsense.hpp</itemPath>
+      <itemPath>xkcamera_depth_zed.hpp</itemPath>
       <itemPath>xkcamera_file.hpp</itemPath>
       <itemPath>xkcamera_usb.hpp</itemPath>
     </logicalFolder>
@@ -21,6 +22,7 @@
       <itemPath>xkcamera.cpp</itemPath>
       <itemPath>xkcamera_depth.cpp</itemPath>
       <itemPath>xkcamera_depth_realsense.cpp</itemPath>
+      <itemPath>xkcamera_depth_zed.cpp</itemPath>
       <itemPath>xkcamera_file.cpp</itemPath>
       <itemPath>xkcamera_usb.cpp</itemPath>
     </logicalFolder>
@@ -71,6 +73,10 @@
       </item>
       <item path="xkcamera_depth_realsense.hpp" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="xkcamera_depth_zed.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="xkcamera_depth_zed.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="xkcamera_file.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="xkcamera_file.hpp" ex="false" tool="3" flavor2="0">
@@ -113,6 +119,10 @@
       <item path="xkcamera_depth_realsense.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="xkcamera_depth_realsense.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="xkcamera_depth_zed.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="xkcamera_depth_zed.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="xkcamera_file.cpp" ex="false" tool="1" flavor2="0">
       </item>

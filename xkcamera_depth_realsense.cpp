@@ -32,14 +32,46 @@ namespace xk
     {
         _pipe.stop();
     }
-    
-    double xkcamera_depth_realsense::get_depth_cm(uint32_t x, uint32_t y)
+    double xkcamera_depth_realsense::get_depth_internal(uint32_t x, uint32_t y)
     {
         float yscale = _frame_depth->get_height() / _frame_color.rows;
         float xscale = _frame_depth->get_width() / _frame_color.cols;
         
         //get distance, factor in scale between depth & color frames.
         return _frame_depth->get_distance(x * xscale , y * yscale) * 100.00f;
+    }
+    
+    double xkcamera_depth_realsense::get_depth_cm(uint32_t x, uint32_t y)
+    {
+        //get the mean distance of a X*Y square
+        double distance = 0; 
+        std::vector<double> distances;
+
+        for (int xw = -5; xw < 5; xw++ )
+        {
+            for (int yh = -5; yh < 5; yh++)
+            {
+                double dist = get_depth_internal(x + xw, y + yh);
+
+                //only use non zeros
+                if (dist > 0)
+                    distances.push_back(dist);
+            }
+        }
+
+        //If no readings in square was above zero, output whatever the current reading is.. even if zero..
+        if (distances.size() > 0)
+        {
+            //median
+            std::nth_element(distances.begin(), distances.begin() + distances.size()/2, distances.end());
+            distance = distances[distances.size()/2];
+        }
+        else
+        {
+            distance = get_depth_internal(x, y);       
+        }
+        
+        return distance;
     }
     
     void xkcamera_depth_realsense::update_frames()
