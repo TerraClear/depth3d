@@ -1,6 +1,6 @@
 /*
  * Specific implementation for RealSense 3D camera class 
- * Copyright (C) 2017 Jacobus du Preez / kdupreez@hotmail.com
+ * Copyright (C) 2017 TerraClear, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,8 @@ namespace xk
             //base class implementations.. 
             double      get_depth_cm(uint32_t x, uint32_t y);
             void        update_frames();
+            
+            int         avgerage_square_pixels = 5;
         
         private:
             rs2::pipeline   _pipe;

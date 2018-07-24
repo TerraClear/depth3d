@@ -1,6 +1,6 @@
 /*
  * Specific implementation for RealSense 3D camera class 
- * Copyright (C) 2017 Jacobus du Preez / kdupreez@hotmail.com
+ * Copyright (C) 2017 TerraClear, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,9 +47,9 @@ namespace xk
         double distance = 0; 
         std::vector<double> distances;
 
-        for (int xw = -5; xw < 5; xw++ )
+        for (int xw = -avgerage_square_pixels; xw < avgerage_square_pixels; xw++ )
         {
-            for (int yh = -5; yh < 5; yh++)
+            for (int yh = -avgerage_square_pixels; yh < avgerage_square_pixels; yh++)
             {
                 double dist = get_depth_internal(x + xw, y + yh);
 
