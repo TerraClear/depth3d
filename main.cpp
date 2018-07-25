@@ -15,21 +15,26 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * 
+ * CREATED BY: Koos du Preez - koos@terraclear.com
+ * 
 */
 
 #include <cstdlib>
 #include <iostream>
 
-#include "xkcamera_depth_realsense.hpp"
-#include "xkcamera_usb.hpp"
-#include "xkcamera_file.hpp"
-#include "xkcamera_depth_zed.hpp"
+//libterraclear
+#include "camera_depth_realsense.hpp"
+#include "camera_usb.hpp"
+#include "camera_file.hpp"
+#include "camera_depth_zed.hpp"
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 
 using namespace std;
 
+namespace tc = terraclear;
 
 //Capture mouse click position..
 
@@ -57,30 +62,31 @@ void mousecallback(int event, int x, int y, int flags, void* userdata)
 int main(int argc, char** argv) 
 {
     //testing realsense cam implementation..
-    xk::xkcamera_depth_realsense realsense;
+    tc::camera_depth_realsense realsense;
+    realsense.avgerage_square_pixels = 10;
 
     //testing ZED cam implementation..
-    //xk::xkcamera_depth_zed zed(0, xk::CameraPosition::Left);
+    //tc::camera_depth_zed zed(0, tc::CameraPosition::Left);
 
     //testing regular usb cam implementation..
-  //  xk::xkcamera_usb usbcam(3, 1280, 720);
+  //  tc::camera_usb usbcam(3, 1280, 720);
 
     //testing video file implementation..
-  //  xk::xkcamera_file filecam("/home/koos/Downloads/rocks4.mp4");
+  //  tc::camera_file filecam("/home/koos/Downloads/rocks4.mp4");
     
     
-    //cast to camera
-    xk::xkcamera* cam = &realsense;
-//    xk::xkcamera* cam = &zed;
-//    xk::xkcamera* cam = &usbcam;
-//    xk::xkcamera* cam = &filecam;
+    //cast to camera_base
+    tc::camera_base* cam = &realsense;
+//    tc:camera_base* cam = &zed;
+//    tc::camera_base* cam = &usbcam;
+//    tc::camera_base* cam = &filecam;
 
 
     
     // ----
     
     //cast to 3d depth cam if possible
-    xk::xkcamera_depth* depthcam = dynamic_cast<xk::xkcamera_depth*>(cam);
+    tc::camera_depth* depthcam = dynamic_cast<tc::camera_depth*>(cam);
 
     //check if we have 3D camera functions..
     bool has3d = (depthcam == nullptr) ? false : true;
@@ -105,6 +111,7 @@ int main(int argc, char** argv)
    do
     {
         //circle around target area..
+      
         cv::circle(cam_img, _clickpos, 10, cv::Scalar(0x00, 0x00, 0xff), 2);
 
         //get the mean distance of a X*Y square
@@ -112,12 +119,12 @@ int main(int argc, char** argv)
         if (has3d) //only get distance of camera supports 3D funcions..
         {
 
-            distance = depthcam->get_depth_cm(_clickpos.x, _clickpos.y);       
+            distance = depthcam->get_depth_inches(_clickpos.x, _clickpos.y);       
 
             //Draw distance text
             std::stringstream strstrm;
 //            strstrm << std::fixed << std::setprecision(2) << distance << " cm";
-            strstrm << std::fixed << std::setprecision(2) << (uint32_t) distance << "\"";
+            strstrm << std::fixed << std::setprecision(4) << distance << "\"";
             putText(cam_img, strstrm.str(), cv::Point(50,125), cv::FONT_HERSHEY_PLAIN, 4,  cv::Scalar(0x00, 0x00, 0xff), 2);                                    
         }
         else
@@ -131,7 +138,7 @@ int main(int argc, char** argv)
         cv::imshow(window_name, cam_img);
 
         //30 fps roughly
-        int x = cv::waitKey(33);
+        int x = cv::waitKey(1);
         if (x > 0)
         {
             cout << "EXIT: " << x << endl ;
