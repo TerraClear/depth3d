@@ -19,12 +19,6 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>main.cpp</itemPath>
-      <itemPath>xkcamera.cpp</itemPath>
-      <itemPath>xkcamera_depth.cpp</itemPath>
-      <itemPath>xkcamera_depth_realsense.cpp</itemPath>
-      <itemPath>xkcamera_depth_zed.cpp</itemPath>
-      <itemPath>xkcamera_file.cpp</itemPath>
-      <itemPath>xkcamera_usb.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -44,44 +38,39 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <compilerSet>default</compilerSet>
+        <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <ccTool>
           <standard>8</standard>
+          <incDir>
+            <pElem>../libterraclear/src</pElem>
+          </incDir>
         </ccTool>
         <linkerTool>
+          <linkerAddLib>
+            <pElem>../libterraclear/dist/Debug/GNU-Linux</pElem>
+          </linkerAddLib>
           <linkerLibItems>
             <linkerOptionItem>`pkg-config --libs opencv`</linkerOptionItem>
             <linkerOptionItem>`pkg-config --libs realsense2`</linkerOptionItem>
+            <linkerLibLibItem>terraclear</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="xkcamera.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="xkcamera.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_depth.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="xkcamera_depth.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="xkcamera_depth_realsense.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="xkcamera_depth_realsense.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_depth_zed.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="xkcamera_depth_zed.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="xkcamera_file.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="xkcamera_file.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_usb.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="xkcamera_usb.hpp" ex="false" tool="3" flavor2="0">
       </item>
@@ -108,27 +97,15 @@
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="xkcamera.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="xkcamera.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_depth.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="xkcamera_depth.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="xkcamera_depth_realsense.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="xkcamera_depth_realsense.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_depth_zed.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="xkcamera_depth_zed.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="xkcamera_file.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="xkcamera_file.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_usb.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="xkcamera_usb.hpp" ex="false" tool="3" flavor2="0">
       </item>

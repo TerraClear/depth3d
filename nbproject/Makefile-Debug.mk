@@ -35,13 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/xkcamera.o \
-	${OBJECTDIR}/xkcamera_depth.o \
-	${OBJECTDIR}/xkcamera_depth_realsense.o \
-	${OBJECTDIR}/xkcamera_depth_zed.o \
-	${OBJECTDIR}/xkcamera_file.o \
-	${OBJECTDIR}/xkcamera_usb.o
+	${OBJECTDIR}/main.o
 
 
 # C Compiler Flags
@@ -58,7 +52,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=`pkg-config --libs opencv` `pkg-config --libs realsense2`  
+LDLIBSOPTIONS=-L../libterraclear/dist/Debug/GNU-Linux `pkg-config --libs opencv` `pkg-config --libs realsense2` -lterraclear  
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -71,37 +65,7 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/depth3d: ${OBJECTFILES}
 ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g `pkg-config --cflags opencv` `pkg-config --cflags realsense2` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
-
-${OBJECTDIR}/xkcamera.o: xkcamera.cpp
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g `pkg-config --cflags opencv` `pkg-config --cflags realsense2` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkcamera.o xkcamera.cpp
-
-${OBJECTDIR}/xkcamera_depth.o: xkcamera_depth.cpp
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g `pkg-config --cflags opencv` `pkg-config --cflags realsense2` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkcamera_depth.o xkcamera_depth.cpp
-
-${OBJECTDIR}/xkcamera_depth_realsense.o: xkcamera_depth_realsense.cpp
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g `pkg-config --cflags opencv` `pkg-config --cflags realsense2` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkcamera_depth_realsense.o xkcamera_depth_realsense.cpp
-
-${OBJECTDIR}/xkcamera_depth_zed.o: xkcamera_depth_zed.cpp
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g `pkg-config --cflags opencv` `pkg-config --cflags realsense2` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkcamera_depth_zed.o xkcamera_depth_zed.cpp
-
-${OBJECTDIR}/xkcamera_file.o: xkcamera_file.cpp
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g `pkg-config --cflags opencv` `pkg-config --cflags realsense2` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkcamera_file.o xkcamera_file.cpp
-
-${OBJECTDIR}/xkcamera_usb.o: xkcamera_usb.cpp
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g `pkg-config --cflags opencv` `pkg-config --cflags realsense2` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/xkcamera_usb.o xkcamera_usb.cpp
+	$(COMPILE.cc) -g -I../libterraclear/src `pkg-config --cflags opencv` `pkg-config --cflags realsense2` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:
