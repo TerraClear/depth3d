@@ -4,12 +4,6 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>xkcamera.hpp</itemPath>
-      <itemPath>xkcamera_depth.hpp</itemPath>
-      <itemPath>xkcamera_depth_realsense.hpp</itemPath>
-      <itemPath>xkcamera_depth_zed.hpp</itemPath>
-      <itemPath>xkcamera_file.hpp</itemPath>
-      <itemPath>xkcamera_usb.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -57,22 +51,11 @@
             <linkerOptionItem>`pkg-config --libs opencv`</linkerOptionItem>
             <linkerOptionItem>`pkg-config --libs realsense2`</linkerOptionItem>
             <linkerLibLibItem>terraclear</linkerLibLibItem>
+            <linkerOptionItem>`pkg-config --libs jsoncpp`</linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="xkcamera.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_depth.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_depth_realsense.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_depth_zed.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_file.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_usb.hpp" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -96,18 +79,6 @@
         </asmTool>
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="xkcamera.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_depth.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_depth_realsense.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_depth_zed.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_file.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="xkcamera_usb.hpp" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>

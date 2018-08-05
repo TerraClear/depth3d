@@ -52,7 +52,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../libterraclear/dist/Debug/GNU-Linux `pkg-config --libs opencv` `pkg-config --libs realsense2` -lterraclear  
+LDLIBSOPTIONS=-L../libterraclear/dist/Debug/GNU-Linux `pkg-config --libs opencv` `pkg-config --libs realsense2` -lterraclear `pkg-config --libs jsoncpp`  
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -65,7 +65,7 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/depth3d: ${OBJECTFILES}
 ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../libterraclear/src `pkg-config --cflags opencv` `pkg-config --cflags realsense2` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g -I../libterraclear/src `pkg-config --cflags opencv` `pkg-config --cflags realsense2` `pkg-config --cflags jsoncpp` -std=c++11  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:
