@@ -36,26 +36,46 @@ using namespace std;
 
 namespace tc = terraclear;
 
-//Capture mouse click position..
+//inches between calibration points.
+#define CAL_INCHES 60.0f
 
-cv::Point _clickpos(0,0);
+//Capture mouse click position..
+cv::Point _clickpos1(0,0);
+cv::Point _clickpos2(0,0);
+cv::Point _mousepos1(0,0);
+bool _first = false;
+
+float degtorad(float degrees)
+{
+    return degrees * (180.0/3.141592653589793238463);
+}
+
+float radtodeg(float radians)
+{
+    return radians * (180.0/3.141592653589793238463);
+}
 
 void mousecallback(int event, int x, int y, int flags, void* userdata)
 {
      if  ( event == cv::EVENT_LBUTTONDOWN )
      {
-         //set measure point where mouse was clicked..
-            _clickpos = cv::Point(x,y);
+         if (_first)
+            _clickpos1 = cv::Point(x,y);
+         else
+            _clickpos2 = cv::Point(x,y);
+         
+         _first = !_first;
      }
      else if  ( event == cv::EVENT_RBUTTONDOWN )
      {
+         //set measure point where mouse was clicked..
      }
      else if  ( event == cv::EVENT_MBUTTONDOWN )
      {
      }
      else if ( event == cv::EVENT_MOUSEMOVE )
      {
-
+        _mousepos1 = cv::Point(x,y);
      }
 }
 
@@ -106,39 +126,71 @@ int main(int argc, char** argv)
     cv::Mat cam_img = cam->getRGBFrame();
 
     //initial position is center of image 
-   _clickpos = cv::Point(cam_img.cols / 2, cam_img.rows / 2);
+    cv::Point center_point = _clickpos1 = _clickpos2 = _mousepos1 = cv::Point(cam_img.cols / 2, cam_img.rows / 2);
 
    do
     {
-        //circle around target area..
-      
-        cv::circle(cam_img, _clickpos, 10, cv::Scalar(0x00, 0x00, 0xff), 2);
+        //circle around target areas..      
+        cv::circle(cam_img, _clickpos1, 8, cv::Scalar(0x00, 0xff, 0xff), 2);
+        cv::circle(cam_img, _clickpos2, 8, cv::Scalar(0x00, 0x00, 0xff), 2);
+        cv::circle(cam_img, _mousepos1, 8, cv::Scalar(0x00, 0xff, 0x00), 2);
 
-        //get the mean distance of a X*Y square
-        double distance = 0; 
+        
+        float c1, d1, d2, mouse_distance;
+        
         if (has3d) //only get distance of camera supports 3D funcions..
         {
 
-            distance = depthcam->get_depth_inches(_clickpos.x, _clickpos.y);       
+            c1 = depthcam->get_depth_inches(center_point.x, center_point.y);
+            d1 = depthcam->get_depth_inches(_clickpos1.x, _clickpos1.y);       
+            d2 = depthcam->get_depth_inches(_clickpos2.x, _clickpos2.y);    
+            mouse_distance = depthcam->get_depth_inches(_mousepos1.x, _mousepos1.y);    
+            
+            //calculate camera angle from two calibration points.
+            float cal_a_diff = (d1 > d2) ? d1 - d2 : d2 - d1;
+            float cal_c = CAL_INCHES;
+            float cal_angle = acos(cal_a_diff / cal_c); //in RADIANS..
+            
+            //calculate distance on ground from where camera plane & ground 
+            //intersect to where image center point
+            //i.e. this gives us the camera position on camera plane.
+            float center_c = c1 / cos(cal_angle);
+            
+            //calculate distance from camera (perpendicular ground) 
+            //to image center point. camera height above ground
+            //can also be inferred from this.
+            float cam_a = c1 * cos(cal_angle);
+            
+            //calculate OFFSET on ground from where camera plane & 
+            //ground intersect to where camera is perpendicular to ground.
+            float cal_offset = center_c - cam_a;
 
+            //calculate true distance on ground from camera and mouse point.
+            float mouse_c = mouse_distance / cos(cal_angle);
+            float mouse_corrected = mouse_c - cal_offset;
+            
             //Draw distance text
             std::stringstream strstrm;
-//            strstrm << std::fixed << std::setprecision(2) << distance << " cm";
-            strstrm << std::fixed << std::setprecision(4) << distance << "\"";
-            putText(cam_img, strstrm.str(), cv::Point(50,125), cv::FONT_HERSHEY_PLAIN, 4,  cv::Scalar(0x00, 0x00, 0xff), 2);                                    
+//            strstrm << "d1:" << std::fixed << std::setprecision(2) << d1 << "\"";
+//            strstrm << ",d2:" << std::fixed << std::setprecision(2) << d2 << "\"";
+            strstrm << "m:" << std::fixed << std::setprecision(2) << mouse_distance  << "\"";
+            strstrm << ",mc:" << std::fixed << std::setprecision(2) << mouse_corrected  << "\"";
+//            strstrm << ", a: " << std::fixed << std::setprecision(2) << side_a  << "\"";
+//            strstrm << ", c: " << std::fixed << std::setprecision(2) << side_c  << "\"";
+            putText(cam_img, strstrm.str(), cv::Point(10,50), cv::FONT_HERSHEY_PLAIN, 3,  cv::Scalar(0x00, 0x00, 0xff), 2);                                    
         }
         else
         {
             //Draw distance text
             std::string no3d = "[NO 3D CAM]";
-            putText(cam_img, no3d.c_str(), cv::Point(50,125), cv::FONT_HERSHEY_PLAIN, 4,  cv::Scalar(0x00, 0x00, 0xff), 2);                                    
+            putText(cam_img, no3d.c_str(), cv::Point(10,50), cv::FONT_HERSHEY_PLAIN, 3,  cv::Scalar(0x00, 0x00, 0xff), 2);                                    
         }
         
         //show image
         cv::imshow(window_name, cam_img);
 
         //30 fps roughly
-        int x = cv::waitKey(1);
+        int x = cv::waitKey(10);
         if (x > 0)
         {
             cout << "EXIT: " << x << endl ;
