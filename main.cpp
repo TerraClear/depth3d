@@ -284,6 +284,12 @@ std::vector<cv::Rect> get_blues_lights(cv::Mat img)
     return blue_lights;
 }
 
+void sliderCallBack(int pos, void* data) 
+{
+
+
+}
+
 int main(int argc, char** argv) 
 {
     //testing realsense cam implementation..
@@ -319,6 +325,7 @@ int main(int argc, char** argv)
     //Open CV Window stuff
     std::string window_name = "rgb";
     cv::namedWindow(window_name, cv::WINDOW_NORMAL | cv::WINDOW_FREERATIO);// | WINDOW_AUTOSIZE);
+//    namedWindow(windowName,  CV_GUI_EXPANDED);
   //  cv::resizeWindow(window_name, 1024, 768);
     
     //get first frames
@@ -333,9 +340,25 @@ int main(int argc, char** argv)
     //initial position is center of image 
     cv::Point center_point = _clickpos1 = _clickpos2 = _mousepos1 = cv::Point(cam_img.cols / 2, cam_img.rows / 2);
 
+    int hlow = _lowrange[0];
+    int slow = _lowrange[1];
+    int vlow = _lowrange[2];
+    int hhigh = _highrange[0];
+    int shigh = _highrange[1];
+    int vhigh= _highrange[2];
+    
+    cv::createTrackbar("HL", window_name, &hlow, 175, sliderCallBack);
+    cv::createTrackbar("HH", window_name, &hhigh, 175, sliderCallBack);
+    cv::createTrackbar("SL", window_name, &slow, 255, sliderCallBack);
+    cv::createTrackbar("SH", window_name, &shigh, 255, sliderCallBack);
+    cv::createTrackbar("VL", window_name, &vlow, 255, sliderCallBack);
+    cv::createTrackbar("VH", window_name, &vhigh, 255, sliderCallBack);
+
    do
     {
        
+       _lowrange = cv::Scalar(hlow, slow, vlow);
+       _highrange = cv::Scalar(hhigh, shigh, vhigh);
        
         //find all blue objects.
        std::vector<cv::Rect> blue_balls = findObjectBoundingBoxes(cam_img, _lowrange, _highrange);
