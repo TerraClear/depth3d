@@ -28,9 +28,13 @@
 #include "camera_usb.hpp"
 #include "camera_file.hpp"
 #include "camera_depth_zed.hpp"
+#include "hsvcalibration.hpp"
 
+//OPENCV
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
+
+#include "detector_hsv.hpp"
 
 namespace tc = terraclear;
 
@@ -41,11 +45,10 @@ namespace tc = terraclear;
 cv::Point _clickpos1(0,0);
 cv::Point _clickpos2(0,0);
 cv::Point _mousepos1(0,0);
+cv::Point _hsvpos1(20,10);
 bool _first = false;
 
 bool _firstrange = false;
-cv::Scalar _lowrange = cv::Scalar(94,130,190);
-cv::Scalar _highrange = cv::Scalar(105,220,250);
 
 float degtorad(float degrees)
 {
@@ -57,6 +60,7 @@ float radtodeg(float radians)
     return radians * (180.0/3.141592653589793238463);
 }
 
+/*
 void show_hsv(cv::Mat imgsrc, int x, int y)
 {
         cv::Mat hsv;
@@ -83,7 +87,7 @@ void show_hsv(cv::Mat imgsrc, int x, int y)
     _firstrange = !_firstrange;
     
 }
-
+*/
 
 void mousecallback(int event, int x, int y, int flags, void* userdata)
 {
@@ -102,186 +106,12 @@ void mousecallback(int event, int x, int y, int flags, void* userdata)
      }
      else if  ( event == cv::EVENT_MBUTTONDOWN )
      {
-         //show_hsv(*((cv::Mat*)userdata),x ,y);
+          _hsvpos1 = cv::Point(x,y);
      }
      else if ( event == cv::EVENT_MOUSEMOVE )
      {
         _mousepos1 = cv::Point(x,y);
      }
-}
-
-
-void mergeBoundingBoxes(std::vector<cv::Rect> &object_boxes)
-{
-    //Group neighbouring rectangles
-    std::vector<cv::Rect> object_boxes_copy(object_boxes);
-    object_boxes.insert(object_boxes.end(), object_boxes_copy.begin(), object_boxes_copy.end());
-    cv::groupRectangles(object_boxes, 1, 0.2);
- }
-
-
-
-//Find objects in a scene based on specific criteria
-//Return contours for objects
-std::vector<cv::Rect> findObjectBoundingBoxes(cv::Mat imgsrc, cv::Scalar lowrange, cv::Scalar highrange)
-{
-    
-    
-    //ret vector
-    std::vector<cv::Rect> ret_vect;
-    
-    // hard coded color hue range for BLUE
-    cv::Scalar lowRange = lowrange;// cv::Scalar(77,201,200);
-    cv::Scalar highRange = highrange; //cv::Scalar(81,209,250);
- 
-    cv::Mat mat_filtered;
-    
-    //blur Image a bit first.
-    cv::blur(imgsrc, mat_filtered, cv::Size(20,20));
-    
-    /// Transform it to HSV color space
-    cv::cvtColor(mat_filtered, mat_filtered, cv::COLOR_BGR2HSV);
-    
-    //find all objects in range
-    cv::inRange(mat_filtered, lowRange, highRange, mat_filtered);
-  
-  
-    //morphological opening (remove small objects from the foreground)
-    cv::erode(mat_filtered, mat_filtered, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2, 2)) );
-    cv::dilate( mat_filtered, mat_filtered, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)) ); 
-
-     //morphological closing (fill small holes in the foreground)
-    cv::dilate( mat_filtered, mat_filtered, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)) ); 
-    cv::erode(mat_filtered, mat_filtered, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2, 2)) );
-    
-    //Vector for all contours.
-    std::vector<std::vector<cv::Point>> contours;
-    findContours(mat_filtered, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
-    
-    //create bounding boxes from contours
-    for (std::vector<std::vector<cv::Point>>::iterator it = contours.begin(); it != contours.end(); it++)
-    {
-        std::vector<cv::Point> contour = *it;
-        ret_vect.push_back(cv::boundingRect(cv::Mat(contour)));
-    }
-    
-    //duplicate all rectangles, hack to make every rect at least appear twice
-    //so it can be grouped..
-    mergeBoundingBoxes(ret_vect);
-
-    
-    return ret_vect;
-}
-
-// gets the location of all of the blue lights for location of paddles
-// there may be more than actually present, so probably should take the largest ones
-std::vector<cv::Rect> get_blues_lights(cv::Mat img)
-{
-    // a collection of all of the blue_lights
-    std::vector<cv::Rect> blue_lights;
-    cv::Mat hsvimg;
-    cv::cvtColor(img, hsvimg, cv::COLOR_BGR2HSV);
-    hsvimg.forEach<cv::Vec3b>
-    (
-      [&](cv::Vec3b &pixel, const void * position) -> void
-      {
-        if(pixel.val[0]>76 && pixel.val[0]<106 && pixel.val[1] < 55 &&
-           pixel.val[2] > 240)
-            pixel = cv::Vec3b(120,100,100);
-        else
-            pixel = cv::Vec3b(0,0,0);
-      }
-    );
-    cv::cvtColor(hsvimg, img, cv::COLOR_HSV2BGR);
-    cv::Mat erode = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2,2));
-    cv::Mat dilate = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3,3));
-    // erodes many times so that any small amounts of blue are blasted away to
-    // leave behind the large blue spots, may have to adjust the amount of erosion
-    // if the objects are further away
-    cv::erode(img, img, erode);
-    cv::dilate(img,img, dilate);
-    cv::Mat gray;
-    // contours requires gray scale
-    cv::cvtColor(img, gray, cv::COLOR_BGR2GRAY);
-    std::vector<std::vector<cv::Point>> contours;
-    cv::findContours(gray, contours, CV_RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE);
-    // has the indices of all of the contours used in current rectangles, just
-    // used to know when all of the contours have been used
-    std::set<int> contours_included;
-    // this is purposely skewed for the height, since the objects are expected
-    // to be vertical
-    int height_valid = 400;
-    int width_valid = 100;
-    // so that if there are no contours, no seg fault
-    if(contours.size() > 0)
-    {
-        while(contours.size()>contours_included.size())
-        {
-            std::cout << contours.size() << " " << contours_included.size() << std::endl;
-             // find the first element that has not been found yet
-            cv::Moments moment;
-            if(contours_included.empty())
-            {
-                moment = cv::moments((cv::Mat)contours[0]);
-            }
-            else
-            {
-                for(int i = 0; i< contours.size(); i++)
-                {
-                    if(contours_included.find(i) == contours_included.end())
-                    {
-                        moment = cv::moments((cv::Mat)contours[i]);
-                        break;
-                    }
-                }
-            }
-            // get that first contours place
-            cv::Rect_<double> paddle(moment.m10/moment.m00, moment.m01/moment.m00, 10.0,10.0);
-            // expands the rectangle to encompass the whole area, the center of the
-            // rectangle should be the actual location
-            // this for loop is just to grow the rectangle over many increments
-            for(int index = 0; index < 5; index++)
-            {
-                for(int i = 0; i < contours.size(); i++)
-                {
-                    moment = cv::moments((cv::Mat)contours[i]);
-                    double curx = moment.m10/moment.m00;
-                    double cury = moment.m01/moment.m00;
-                    // has to have less distance away so do squared so no absolute value needed
-                    if(curx<paddle.x+paddle.width+width_valid && curx>paddle.x-width_valid &&
-                       cury<paddle.y+paddle.height+height_valid && cury>paddle.y-height_valid &&
-                       contours_included.find(i) == contours_included.end()) // this is so things already on here are not taken
-                    {
-                        // so that we know that this is already included in the contours done
-                        // otherwise this will infinite loop even after finding all of them
-                        contours_included.insert(i);
-                        if(paddle.x > curx)
-                        {
-                            // adds to width since it needs to still extend to
-                            // the previous width
-                            paddle.width += paddle.x - curx;
-                            paddle.x = curx;
-                        }
-                        else if(paddle.x+paddle.width < curx)
-                        {
-                            paddle.width = curx-paddle.x;
-                        }
-                        if(paddle.y > cury)
-                        {
-                            paddle.height += paddle.y - cury;
-                            paddle.y = cury;
-                        }
-                        else if(paddle.y+paddle.height<cury)
-                        {
-                            paddle.height = cury-paddle.y;
-                        }
-                    }
-                }
-            }
-            blue_lights.push_back(paddle);
-        }
-    }
-    return blue_lights;
 }
 
 void sliderCallBack(int pos, void* data) 
@@ -332,7 +162,10 @@ int main(int argc, char** argv)
     cam->update_frames();
     
     //Image ref.
-    cv::Mat cam_img = cam->getRGBFrame();
+    cv::Mat cam_raw = cam->getRGBFrame();
+    
+    cv::Mat cam_img;    
+    cam_raw.copyTo(cam_img);
 
     //set the callback function for all mouse events
     cv::setMouseCallback(window_name, mousecallback, (void*) &cam_img);
@@ -340,28 +173,26 @@ int main(int argc, char** argv)
     //initial position is center of image 
     cv::Point center_point = _clickpos1 = _clickpos2 = _mousepos1 = cv::Point(cam_img.cols / 2, cam_img.rows / 2);
 
-    int hlow = _lowrange[0];
-    int slow = _lowrange[1];
-    int vlow = _lowrange[2];
-    int hhigh = _highrange[0];
-    int shigh = _highrange[1];
-    int vhigh= _highrange[2];
+    //create HSV based detector
+    tc::detector_hsv hsvd(cam_img);
     
-    cv::createTrackbar("HL", window_name, &hlow, 175, sliderCallBack);
-    cv::createTrackbar("HH", window_name, &hhigh, 175, sliderCallBack);
-    cv::createTrackbar("SL", window_name, &slow, 255, sliderCallBack);
-    cv::createTrackbar("SH", window_name, &shigh, 255, sliderCallBack);
-    cv::createTrackbar("VL", window_name, &vlow, 255, sliderCallBack);
-    cv::createTrackbar("VH", window_name, &vhigh, 255, sliderCallBack);
-
+    int hlow =  hsvd._lowrange[0];
+    int slow = hsvd._lowrange[1];
+    int vlow = hsvd._lowrange[2];
+    int hhigh = hsvd._highrange[0];
+    int shigh = hsvd._highrange[1];
+    int vhigh= hsvd._highrange[2];
+    
    do
     {
        
-       _lowrange = cv::Scalar(hlow, slow, vlow);
-       _highrange = cv::Scalar(hhigh, shigh, vhigh);
+       //set low & high HSV ranges.
+       hsvd._lowrange = cv::Scalar(hlow, slow, vlow);
+       hsvd._highrange = cv::Scalar(hhigh, shigh, vhigh);
        
         //find all blue objects.
-       std::vector<cv::Rect> blue_balls = findObjectBoundingBoxes(cam_img, _lowrange, _highrange);
+       std::vector<tc::bounding_box> blue_balls = hsvd.detect_objects();
+       
      //  std::vector<cv::Rect> blue_balls = get_blues_lights(cam_img);
         for (auto bbox : blue_balls)
         {
@@ -433,16 +264,27 @@ int main(int argc, char** argv)
         //show image
         cv::imshow(window_name, cam_img);
 
-        //30 fps roughly
-        int x = cv::waitKey(100);
-        if (x > 0)
+        int x = cv::waitKey(33);
+        if(x == 27) // ESC Key = exit
         {
-            std::cout << "EXIT: " << x << std::endl ;
-            break;
+            break;       
+        }
+        else if (x == 99) //c key = CALIBRATE 
+        {
+            tc::hsvcalibration hsvcal(hlow, hhigh ,slow, shigh, vlow, vhigh);
+            cv::Mat hsvroi = cam_raw(cv::Rect(_hsvpos1.x-20, _hsvpos1.y-10, 40, 20));
+            hsvcal.setimage(hsvroi);
+            
+        }
+        else if (x > 0)
+        {
+            std::cout << x << std::endl ;
         }
      
         //update image
         cam->update_frames();
+        cam_raw.copyTo(cam_img);
+        
         
    } while (true);
 
