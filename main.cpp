@@ -50,16 +50,7 @@ namespace tc = terraclear;
 //Capture mouse position..
 cv::Point _mousepos1(0, 0);
 bool _first = false;
-
 bool _firstrange = false;
-
-float degtorad(float degrees) {
-    return degrees * (180.0 / 3.141592653589793238463);
-}
-
-float radtodeg(float radians) {
-    return radians * (180.0 / 3.141592653589793238463);
-}
 
 int trigger_line_offset = 1024.0f;
 void mousecallback(int event, int x, int y, int flags, void* userdata) {
@@ -80,12 +71,14 @@ void mousecallback(int event, int x, int y, int flags, void* userdata) {
     }
 }
 
-void sliderCallBack(int pos, void* data) {
+void sliderCallBack(int pos, void* data) 
+{
 
 
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv) 
+{
 
     //testing realsense cam implementation..
     tc::camera_depth_realsense realsense;
@@ -95,12 +88,11 @@ int main(int argc, char** argv) {
     //tc::camera_depth_zed zed(0, tc::CameraPosition::Left);
 
 
-    //cast to camera_base
+    //cast to camera_base to test base classing and virtual functions.
     tc::camera_base* cam = &realsense;
     //    tc:camera_base* cam = &zed;
 
-    // ----
-
+    
     //cast to 3d depth cam if possible
     tc::camera_depth* depthcam = dynamic_cast<tc::camera_depth*> (cam);
 
@@ -137,7 +129,7 @@ int main(int argc, char** argv) {
     _mousepos1 = cv::Point(cam_img.cols / 2, cam_img.rows / 2);
 
     //config values
-    double cam_height_above_ground = 6.0f;
+    double cam_height_above_ground = 44.0f;
     
     do {
 
@@ -145,16 +137,11 @@ int main(int argc, char** argv) {
         {
             double ground_angle_rad = depthcam->get_angle_center_rad(depthcam->inches_to_cm(cam_height_above_ground));
 
-            //calculate trigger point distance from origin (where camera plane and ground plane intersect)
-            double trigger_depth = depthcam->get_depth_cm(cam_img.cols / 2, trigger_line_offset); // camera plane distance to object center frame..   
-            double trigger_to_origin_distance = trigger_depth / std::cos(ground_angle_rad); // distance over ground from origin
-
-            //calculate obj distance from origin (where camera plane and ground plane intersect)
-            double obj_depth = depthcam->get_depth_cm(cam_img.cols / 2, _mousepos1.y); 
-            double obj_to_origin_distance = obj_depth / std::cos(ground_angle_rad); // distance over ground from origin.
-
+            cv::Point a(cam_img.cols / 2, trigger_line_offset);
+            cv::Point b(cam_img.cols / 2, _mousepos1.y);
+            
             //distance between trigger & object in centimeters..
-            double trigger_to_obj_distance_inches = depthcam->cm_to_inches(obj_to_origin_distance - trigger_to_origin_distance);
+            double trigger_to_obj_distance_inches = depthcam->cm_to_inches(depthcam->get_distance_over_ground_cm(a, b, ground_angle_rad));
             
             //Draw distance text
             std::stringstream strstrm;
